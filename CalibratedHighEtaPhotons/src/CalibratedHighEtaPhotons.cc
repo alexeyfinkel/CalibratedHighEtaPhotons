@@ -99,7 +99,7 @@ CalibratedHighEtaPhotons::CalibratedHighEtaPhotons(const edm::ParameterSet& iCon
   photonTag_  = iConfig.getParameter<edm::InputTag>( "photons" );
   recHitTag_ =  iConfig.getParameter<edm::InputTag>( "ecalRecHits" );
   
-  produces<reco::PhotonCollection>( "calibratedHighEtaPhotons" ).setBranchAlias( "calibratedHighEtaPhotons");
+  produces<reco::PhotonCollection>();
 }
 
 
@@ -183,7 +183,7 @@ CalibratedHighEtaPhotons::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 		newPhot.setP4(p4);
 		calibratedHighEtaPhotons->push_back(newPhot);
 	}
-	iEvent.put(calibratedHighEtaPhotons,"calibratedHighEtaPhoton");
+	iEvent.put(calibratedHighEtaPhotons);
 }
 
 // ------------ method called once each job just before starting event loop  ------------
