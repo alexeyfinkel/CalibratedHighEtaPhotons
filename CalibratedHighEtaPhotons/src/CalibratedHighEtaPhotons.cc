@@ -76,8 +76,8 @@ class CalibratedHighEtaPhotons : public edm::EDProducer {
       int ix, iy;
       float constsN[40][40], constsP[40][40];//this may be a temporary approach...
       double rawHitSumEnergy, calHitSumEnergy; 
-      TLorentzVector newP4;
-      reco::Particle::LorentzVector p4;
+      TLorentzVector p4l;
+      reco::Particle::LorentzVector oldP4, newP4;
       double eta, phi, newE, newPt;
 };
 
@@ -149,7 +149,7 @@ CalibratedHighEtaPhotons::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 		rawHitSumEnergy = 0;
 		calHitSumEnergy = 0;
 		
-		p4 = photIt->p4();
+		oldP4 = photIt->p4();
 		HaFcollection hafs = photIt->superCluster()->hitsAndFractions();
 		
 		for( HaFcollection::const_iterator hafIt = hafs.begin(); hafIt != hafs.end(); hafIt++ )
@@ -166,7 +166,7 @@ CalibratedHighEtaPhotons::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 	        }
 	        else
 	        {
-	        	if(p4.eta()<0) calHitSumEnergy += itrechit->energy()*constsN[ix-30][iy-30]; 
+	        	if(oldP4.eta()<0) calHitSumEnergy += itrechit->energy()*constsN[ix-30][iy-30]; 
 		        else calHitSumEnergy += itrechit->energy()*constsP[ix-30][iy-30];
 	        }
 		}
@@ -175,12 +175,12 @@ CalibratedHighEtaPhotons::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 		phi = photIt->p4().phi();
 		newE = photIt->p4().E()*calHitSumEnergy/rawHitSumEnergy;
 		newPt = newE/cosh(eta);
-		newP4 .SetPtEtaPhiE(newPt, eta, phi, newE);
+		p4l.SetPtEtaPhiE(newPt, eta, phi, newE);
 		
-		p4 = reco::Particle::LorentzVector(newP4.X(),newP4.Y(),newP4.Z(),newP4.T());
+		newP4 = reco::Particle::LorentzVector(newP4.X(),newP4.Y(),newP4.Z(),newP4.T());
 		//now make a new photon from the old one
 		reco::Photon newPhot = *photIt;
-		newPhot.setP4(p4);
+		newPhot.setP4(newP4);
 		calibratedHighEtaPhotons->push_back(newPhot);
 	}
 	iEvent.put(calibratedHighEtaPhotons);
@@ -196,7 +196,7 @@ CalibratedHighEtaPhotons::beginJob()
     int cix, ciy, iz;
     float calConst, sigma;
     
-    ConstsFile.open("/home/grad/finkel/work/NoTrack/CMSSW_5_3_8/src/NoTrack/MakeZEffTree/test/Calibration/CalConsts_Data.txt");
+    ConstsFile.open("../data/CalConsts_Data.txt");
 	if(!ConstsFile.is_open())
 	{
 		std::cout<<"Failed to open Data constants file. Existing"<<std::endl;
