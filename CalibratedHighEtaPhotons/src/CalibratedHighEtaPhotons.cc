@@ -177,7 +177,7 @@ CalibratedHighEtaPhotons::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 		newPt = newE/cosh(eta);
 		p4l.SetPtEtaPhiE(newPt, eta, phi, newE);
 		
-		newP4 = reco::Particle::LorentzVector(newP4.X(),newP4.Y(),newP4.Z(),newP4.T());
+		newP4 = reco::Particle::LorentzVector(p4l.X(),p4l.Y(),p4l.Z(),p4l.T());
 		//now make a new photon from the old one
 		reco::Photon newPhot = *photIt;
 		newPhot.setP4(newP4);
