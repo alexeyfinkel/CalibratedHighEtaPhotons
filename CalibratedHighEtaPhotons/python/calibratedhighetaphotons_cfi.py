@@ -1,4 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-demo = cms.EDProducer('CalibratedHighEtaPhotons'
+calibratedHighEtaPhotons = cms.EDProducer('CalibratedHighEtaPhotons',
+    photons       = cms.InputTag( "photons" ),
+	ecalRecHits   = cms.InputTag("reducedEcalRecHitsEE"),
 )

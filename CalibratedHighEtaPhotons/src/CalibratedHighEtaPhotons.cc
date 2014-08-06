@@ -77,7 +77,7 @@ class CalibratedHighEtaPhotons : public edm::EDProducer {
       float constsN[40][40], constsP[40][40];//this may be a temporary approach...
       double rawHitSumEnergy, calHitSumEnergy; 
       TLorentzVector p4l;
-      reco::Particle::LorentzVector oldP4, newP4;
+      reco::Particle::LorentzVector newP4;
       double eta, phi, newE, newPt;
 };
 
@@ -149,7 +149,6 @@ CalibratedHighEtaPhotons::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 		rawHitSumEnergy = 0;
 		calHitSumEnergy = 0;
 		
-		oldP4 = photIt->p4();
 		HaFcollection hafs = photIt->superCluster()->hitsAndFractions();
 		
 		for( HaFcollection::const_iterator hafIt = hafs.begin(); hafIt != hafs.end(); hafIt++ )
@@ -166,7 +165,7 @@ CalibratedHighEtaPhotons::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 	        }
 	        else
 	        {
-	        	if(oldP4.eta()<0) calHitSumEnergy += itrechit->energy()*constsN[ix-30][iy-30]; 
+	        	if(photIt->p4().eta()<0) calHitSumEnergy += itrechit->energy()*constsN[ix-30][iy-30]; 
 		        else calHitSumEnergy += itrechit->energy()*constsP[ix-30][iy-30];
 	        }
 		}
@@ -196,7 +195,7 @@ CalibratedHighEtaPhotons::beginJob()
     int cix, ciy, iz;
     float calConst, sigma;
     
-    ConstsFile.open("../data/CalConsts_Data.txt");
+    ConstsFile.open("/home/grad/finkel/work/ZFinder/CMSSW_5_3_13/src/photonBucket/CalibratedHighEtaPhotons/data/CalConsts_Data.txt");
 	if(!ConstsFile.is_open())
 	{
 		std::cout<<"Failed to open Data constants file. Existing"<<std::endl;
